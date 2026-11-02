@@ -10,7 +10,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
 <style>
-/* Layout: one phone-width column; the task card is the whole screen's job, controls sit underneath. */
+/* Layout: one phone-width column; the task card is the whole screen's job, links sit underneath. */
 :root{
   --bg:#EDF0F7; --surface:#FFFFFF; --ink:#141B3A; --muted:#5A6386; --line:#D3D9EB;
   --chip:#E2E7F7; --accent:#2D46F5; --on-strong:#FFFFFF; --ok:#12805A; --bad:#C2352B;
@@ -39,7 +39,7 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:8px 1
 #gate{flex:1;display:flex;flex-direction:column;gap:16px}
 .from{margin:0;font-size:15px;color:var(--muted)}
 .from strong{color:var(--ink)}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px 20px;display:flex;flex-direction:column;gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px 20px;display:flex;flex-direction:column;gap:16px}
 .step{display:flex;align-items:center;justify-content:space-between;gap:10px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .dots{display:flex;gap:5px}
 .dots i{width:22px;height:6px;border-radius:3px;background:var(--chip)}
@@ -49,6 +49,9 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:8px 1
 .word{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,11vw,54px);line-height:1.05;overflow-wrap:anywhere;text-wrap:balance}
 .gloss{font-size:21px;font-weight:700;color:var(--accent)}
 .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.meme{position:relative;margin:0;border-radius:16px;overflow:hidden;background:var(--chip);display:grid;place-items:center;min-height:150px}
+.meme img{display:block;width:100%;max-height:250px;object-fit:contain}
+.other{position:absolute;right:8px;bottom:8px;border:0;border-radius:999px;padding:6px 11px;background:var(--surface);color:var(--ink);font:700 12.5px var(--f-body);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.18)}
 .listen{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:7px 13px 7px 10px;font:500 14px var(--f-body);cursor:pointer}
 .listen svg{width:18px;height:18px}
 .answer-form{display:flex;flex-direction:column;gap:12px}
@@ -56,12 +59,9 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:8px 1
 .hint{margin:0;font-size:14px;color:var(--muted)}
 .answer{width:100%;box-sizing:border-box;font:500 20px var(--f-body);padding:14px 16px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
 .answer:focus{outline:none;border-color:var(--accent)}
-.btn{appearance:none;border:0;border-radius:14px;padding:15px 18px;font:700 16px var(--f-body);background:var(--accent);color:var(--on-strong);cursor:pointer;width:100%;display:inline-flex;justify-content:center;align-items:center;gap:8px}
+.btn{appearance:none;border:0;border-radius:14px;padding:15px 18px;font:700 16px var(--f-body);background:var(--accent);color:var(--on-strong);cursor:pointer;width:100%;box-sizing:border-box;display:inline-flex;justify-content:center;align-items:center;gap:8px;text-decoration:none}
 .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
-.btn.danger{background:var(--bad);color:var(--on-strong)}
-.btn:disabled{opacity:.35;cursor:default}
-.btn svg{width:18px;height:18px;flex:none}
-button:focus-visible,.answer:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button:focus-visible,a:focus-visible,.answer:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .feedback{margin:0;min-height:1.4em;font-size:15px}
 .feedback.bad{color:var(--bad)} .feedback.ok{color:var(--ok)}
 .reveal{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:var(--chip)}
@@ -79,7 +79,7 @@ button:focus-visible,.answer:focus-visible,select:focus-visible{outline:3px soli
 .done p{margin:0}
 .recap{font-size:18px}
 .recap span{font-family:var(--f-mono);font-weight:500}
-.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stack{display:flex;flex-direction:column;gap:10px}
 .links{display:flex;justify-content:center;gap:24px;flex-wrap:wrap}
 .link{background:none;border:0;color:var(--muted);font:500 14px var(--f-body);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px 2px}
 .shake{animation:shake .38s}
@@ -93,17 +93,17 @@ button:focus-visible,.answer:focus-visible,select:focus-visible{outline:3px soli
 .sheet-body h2{font-family:var(--f-display);font-size:22px;margin:0;text-wrap:balance}
 .sheet-body h3{font-size:16px;margin:8px 0 0}
 .sheet-body p{margin:0}
-.stack{display:flex;flex-direction:column;gap:10px}
-.settings{display:grid;grid-template-columns:1fr auto;gap:10px 12px;align-items:center}
-select{font:500 15px var(--f-body);padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
 .list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
-.list li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:10px 0;border-top:1px solid var(--line)}
+.list li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:2px 12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.thumb{grid-row:1 / span 2;width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--chip)}
 .li-en{font-family:var(--f-mono);font-weight:500}
-.li-ua{grid-column:1;color:var(--muted);font-size:14px}
-.chip{grid-column:2;grid-row:1 / span 2;align-self:center;font-family:var(--f-mono);font-size:11px;padding:4px 8px;border-radius:999px;background:var(--chip);color:var(--muted);white-space:nowrap}
-.chip.go{color:var(--accent)} .chip.done{color:var(--ok)}
+.li-ua{grid-column:2;color:var(--muted);font-size:14px}
+.chip{grid-column:3;grid-row:1 / span 2;font-family:var(--f-mono);font-size:11px;padding:4px 8px;border-radius:999px;background:var(--chip);color:var(--muted);white-space:nowrap}
+.chip.go{color:var(--ok)}
+.past{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.past b{font-family:var(--f-mono);font-weight:500;color:var(--muted);margin-right:6px}
 .steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
-code{font-family:var(--f-mono);font-size:13px;background:var(--chip);padding:1px 5px;border-radius:5px}
+code{font-family:var(--f-mono);font-size:13px;background:var(--chip);padding:1px 5px;border-radius:5px;overflow-wrap:anywhere}
 </style>
 
 </head>
@@ -114,15 +114,9 @@ code{font-family:var(--f-mono);font-size:13px;background:var(--chip);padding:1px
     <div class="meta" id="meta"></div>
   </header>
   <main id="gate" aria-live="polite"></main>
-  <div class="stack" id="controls">
-    <div class="controls">
-      <button class="btn ghost" id="call" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>На дзвінку</button>
-      <button class="btn ghost" id="off" type="button">Вимкнути</button>
-    </div>
-    <div class="links">
-      <button class="link" type="button" data-open="dict">Словник</button>
-      <button class="link" type="button" data-open="setup">Як підключити</button>
-    </div>
+  <div class="links">
+    <button class="link" type="button" data-open="dict">Слова дня</button>
+    <button class="link" type="button" data-open="setup">Як підключити</button>
   </div>
 </div>
 
@@ -133,8 +127,11 @@ code{font-family:var(--f-mono);font-size:13px;background:var(--chip);padding:1px
 
 <script>
 (function(){
-const DAY=864e5, MIN=6e4, KEY='odne-slovo-v2', SITE='https://1utsak.github.io/odne-slovo/';
-const APPS={instagram:'Instagram',tiktok:'TikTok',telegram:'Telegram',youtube:'YouTube'};
+const DAY=864e5, KEY='odne-slovo-v3', SITE='https://1utsak.github.io/odne-slovo/', PER_DAY=3;
+const DONE_SHORTCUT='Слово пройдено', HOME_SHORTCUT='На головний';
+const APPS={instagram:{name:'Instagram',url:'instagram://'},tiktok:{name:'TikTok',url:'snssdk1233://'},
+  telegram:{name:'Telegram',url:'tg://'},youtube:{name:'YouTube',url:'youtube://'}};
+const MEMES={"serendipity":["https://media.tenor.com/XRkjSzO4ObEAAAAM/serendipity-o-bouquet.gif","https://media.tenor.com/bTXsO02kfCEAAAAM/serendipity.gif","https://media.tenor.com/-rJQnSr13hoAAAAM/serendipity-mom.gif"],"hindsight":["https://media.tenor.com/egLMRdlf_ycAAAAM/captain-hindsight.gif","https://media.tenor.com/FIrmaKCF8rUAAAAM/hmmm-captain-hindsight.gif","https://media.tenor.com/Uo8rPnhDuAIAAAAM/sad-realizations-hindsight.gif"],"loophole":["https://media.tenor.com/jMgbi1dI34EAAAAM/brooklyn-nine-nine-loophole.gif","https://media.tenor.com/SSdd9acGLNMAAAAM/there-is-a-loophole-michelle-khare.gif","https://media.tenor.com/5Y7TQaIWa9UAAAAM/i-dont-believe-in-loopholes-loopholes.gif"],"gullible":["https://media.tenor.com/_H-reC9YeZIAAAAM/gullible-orange.gif","https://media.tenor.com/tE53AA52yuUAAAAM/gullible-ceiling.gif","https://media.tenor.com/bNG28J-R8_IAAAAM/gullible.gif"],"bewildered":["https://media.tenor.com/0aIpsH2sYzcAAAAM/caseoh-bewildered-bewildered-caseoh.gif","https://media.tenor.com/0QpLyTww04sAAAAM/ernest-shocked-ernest-bewildered.gif","https://media.tenor.com/1Np8nJm2EhkAAAAM/akolade-bewildered.gif"],"meticulous":["https://media.tenor.com/lDf-8xM7b9YAAAAM/meticulous-precision-clara-hughes.gif","https://media.tenor.com/lAc_WXJ93dUAAAAM/copyright-attorneys-in-nj-meticulous-new-jersey-copyright.gif","https://media.tenor.com/Plzcum_HUiMAAAAM/shining-shows-meticulous.gif"],"resilient":["https://media.tenor.com/baKhDVQS5uUAAAAM/henry-resilient-resilient-army.gif","https://media.tenor.com/_Q6X9asJ7CQAAAAM/unsc-resilience-resilience.gif","https://media.tenor.com/JzF3NA-aZN0AAAAM/i-am-not-resilient-greg-russo.gif"],"ubiquitous":["https://media.tenor.com/5BdiizZzCLUAAAAM/seryu-ubiquitous-akame-ga-kill.gif","https://media.tenor.com/Dp1qVPWcJQUAAAAM/uss-ubiquitous-synergy-seeker.gif","https://media.tenor.com/saWNgsNQKPMAAAAM/seryu-ubiquitous-akame-ga-kill.gif"],"eloquent":["https://media.tenor.com/uOVcUgVAWaoAAAAM/you-are-so-eloquent-express-yourself-clearly.gif","https://media.tenor.com/9XcHl4zNbjUAAAAM/eloquent-code.gif","https://media.tenor.com/AzV1dvXcI3YAAAAM/eloquent-countenance-forcas.gif"],"reluctant":["https://media.tenor.com/h9htTVLGrrgAAAAM/reluctant-clapping-david-rose.gif","https://media.tenor.com/3blAIDPNCAgAAAAM/reluctant-yes-better-call-saul.gif","https://media.tenor.com/S5D8T6cOg44AAAAM/fine-whatever.gif"],"grumpy":["https://media.tenor.com/QSh_yh7q8bwAAAAM/grumpy-pout.gif","https://media.tenor.com/z9gRXrX__74AAAAM/grumpy-cat-cat-grumpy.gif","https://media.tenor.com/hvFskYqgKZMAAAAM/grumpy-cranky.gif"],"sneaky":["https://media.tenor.com/t0NzlM38hasAAAAM/very-sneaky.gif","https://media.tenor.com/5tFElHjSK18AAAAM/pink-panther-sneaking.gif","https://media.tenor.com/Rg2SnESNBL8AAAAM/sly-sneaky.gif"],"mesmerizing":["https://media.tenor.com/CB22PFriqJEAAAAM/i-was-completely-mesmerized-alesha-dixon.gif","https://media.tenor.com/JZUjZOno8RIAAAAM/mesmerize-john-legend.gif","https://media.tenor.com/dpjqYltfct0AAAAM/mesmerized-in-love.gif"],"overwhelmed":["https://media.tenor.com/IFn8bkHzO-MAAAAM/over-thinking-overwhelmed.gif","https://media.tenor.com/IUclRqBNy3QAAAAM/overwhelmed-stressed.gif","https://media.tenor.com/QfhuPrcLdgQAAAAM/quite-frankly-im-overwhelmed.gif"],"daunting":["https://media.tenor.com/1iv2pEHZF1QAAAAM/daunting-issue-leonardo-dicaprio.gif","https://media.tenor.com/DB9gAMAtUywAAAAM/it-was-daunting-scary.gif","https://media.tenor.com/n5XFxIc5p3gAAAAM/daunting-scherezade-shroff.gif"],"thrive":["https://media.tenor.com/bLE8K5o5AA0AAAAM/thrive-or-die-grandmama-hester-frump.gif","https://media.tenor.com/LQVu0n3h9IQAAAAM/thriving-im-out-here.gif","https://media.tenor.com/w790sX0HYXcAAAAM/recovery-favors-the-bold-thrive-agenda.gif"],"wander":["https://media.tenor.com/MZ7fshzT2WcAAAAM/wander-over-yonder-shaking.gif","https://media.tenor.com/rFnkFv5KvmwAAAAM/wander-over-yonder-woy.gif","https://media.tenor.com/kj6gPb9t3kEAAAAM/stroll-wandering.gif"],"glimpse":["https://media.tenor.com/vqowzTMJ8g8AAAAM/glimpse-sick-mind.gif","https://media.tenor.com/XaeKblYQlV0AAAAM/joji-glimpse-of-us.gif","https://media.tenor.com/Y_1dxvW5mZgAAAAM/its-a-glimpse-at-all-the-possibilities-shane-luis.gif"],"stubborn":["https://media.tenor.com/2WCHESjGCeAAAAAM/stubborn-mad.gif","https://media.tenor.com/TuNXGr_ztEUAAAAM/am-i-stubborn-ken-finley-cullen.gif","https://media.tenor.com/6Mcf5WB-7icAAAAM/shes-stubborn-eden-espinosa.gif"],"clumsy":["https://media.tenor.com/g1cN29azx6YAAAAM/accident-clumsy.gif","https://media.tenor.com/xduNP_gn7XIAAAAM/clumsy-panda-clumsy.gif","https://media.tenor.com/4HSxTOPKb3IAAAAM/graceful-clumsy.gif"],"vivid":["https://media.tenor.com/rjGswgNaKMYAAAAM/vivid-details-dwayne-johnson.gif","https://media.tenor.com/kgWMTrlUv7kAAAAM/vbs-vivid-bad-squad.gif","https://media.tenor.com/s-nCVPc6gEsAAAAM/vivid-bad-squad-vbs.gif"],"bargain":["https://media.tenor.com/NJLpgBVNXHkAAAAM/bargain-deals.gif","https://media.tenor.com/SZss8WG2130AAAAM/bargain-boys-aunty-donna.gif","https://media.tenor.com/6SIy5jj8a6YAAAAM/bargain-deals.gif"],"rumor":["https://media.tenor.com/TR5IHb4J_YYAAAAM/im-hearing-some-rumors-concerned.gif","https://media.tenor.com/aGoURRc1K38AAAAM/we-got-details-on-that-rumor-keemstar.gif","https://media.tenor.com/LxbGYnQMExIAAAAM/not-just-a-rumor-andrew-glouberman.gif"],"witty":["https://media.tenor.com/m0DxwC-zW7kAAAAM/me-when-im-funny-and-witty-funny.gif","https://media.tenor.com/viVhqujbvdUAAAAM/dancing-cowboy.gif","https://media.tenor.com/gFlT_sfJcJAAAAAM/yusii2-robert-de-niro.gif"],"shallow":["https://media.tenor.com/0n0n7qVAYFIAAAAM/you-seem-kinda-shallow-amelia.gif","https://media.tenor.com/m7YK1CAYM5cAAAAM/pretty-shallow-pamela.gif","https://media.tenor.com/55vW8Cr1cb0AAAAM/shallow-boy.gif"],"fierce":["https://media.tenor.com/2bTEuFySLrcAAAAM/very-fierce-very-face-very-attitude-lala-ri.gif","https://media.tenor.com/HkcZREir8ZUAAAAM/tiny-chef-fierce.gif","https://media.tenor.com/rVZc456ABcsAAAAM/queen-fierce.gif"],"outrageous":["https://media.tenor.com/s0IsxkXYwEAAAAAM/outrageous-egregious-preposterous-jackie-chiles.gif","https://media.tenor.com/w0zjXipeV34AAAAM/starwars-outrageous.gif","https://media.tenor.com/oiW17oIrl8UAAAAM/this-is-outrageous-outrageous.gif"],"breathtaking":["https://media.tenor.com/ezjFZkoX2xgAAAAM/breathtaking-intergalactic-breathtaking.gif","https://media.tenor.com/1hlqyvti8LMAAAAM/breathtaking-beautiful.gif","https://media.tenor.com/uOuZFjkoW00AAAAM/it-was-breathtaking-simon-cowell.gif"],"pristine":["https://media.tenor.com/KxQNXknT7OsAAAAM/pristine-condition-spotless.gif","https://media.tenor.com/Leh0Wmn8QwsAAAAM/pristine.gif","https://media.tenor.com/S7NG0kObx-oAAAAM/pristine-osu.gif"],"reckless":["https://media.tenor.com/ZmvikrTRxK0AAAAM/reckless-dr-vernon-mullins.gif","https://media.tenor.com/oPUDT9wIEiAAAAAM/star-trek-reckless.gif","https://media.tenor.com/4HmV2LnP8R0AAAAM/princess-princess-reckless.gif"],"tipsy":["https://media.tenor.com/QULSLA8ift0AAAAM/drunk-tipsy.gif","https://media.tenor.com/LecWW4SSccsAAAAM/beebo-tipsy.gif","https://media.tenor.com/xEUGY1LXo_gAAAAM/tipsy-im.gif"],"wholesome":["https://media.tenor.com/gN27f9ZlicUAAAAM/wholesome-jidon-adams.gif","https://media.tenor.com/lnbZCqYgFCUAAAAM/comfy-wholesome.gif","https://media.tenor.com/jkBgUPckMZcAAAAM/thank-you-thank-you-for-that-beautiful-positive-wholesome-message.gif"],"yearn":["https://media.tenor.com/704DTt_ZetQAAAAM/chandler-bing-yearning.gif","https://media.tenor.com/Gj-cIFHdwyAAAAAM/yearn-white-girl.gif","https://media.tenor.com/_cZiFRX4ZMwAAAAM/neymar-yearn.gif"],"hilarious":["https://media.tenor.com/HXHCV0LpqNAAAAAM/hilarious-so-funny.gif","https://media.tenor.com/3dQj8AHk94sAAAAM/laughing-hilarious.gif","https://media.tenor.com/vdgE4HzqWM4AAAAM/hilarious-funny.gif"],"vague":["https://media.tenor.com/3dB7PWw7vFkAAAAM/vague-vagueposting.gif","https://media.tenor.com/SxKSxFDNg3AAAAAM/its-a-little-bit-vague-adam.gif","https://media.tenor.com/Dkf3hcj8XyMAAAAM/vague-could-you-be-any-more-vague.gif"],"versatile":["https://media.tenor.com/ZHvo1ZYt5GUAAAAM/spongebob-versatile.gif","https://media.tenor.com/7BhftRyeQyIAAAAM/super-versatile-sophie-burrell.gif","https://media.tenor.com/3rl6l_3Q-2UAAAAM/im-very-uh-versatile.gif"],"feasible":["https://media.tenor.com/CGqWmbH1eiYAAAAM/feasible-seems-feasible.gif","https://media.tenor.com/FLCFycvYivEAAAAM/it-does-not-seem-feasible-ty-rux.gif","https://media.tenor.com/aH4nFjniilEAAAAM/sounds-completely-feasible-malik-payne.gif"],"unprecedented":["https://media.tenor.com/VrdYN4R5kFoAAAAM/absurd-and-unprecedented-msnbc.gif","https://media.tenor.com/y5EaEnfowqwAAAAM/very-unprecedented-tina.gif","https://media.tenor.com/TkQyNeMmhxsAAAAM/an-unprecedented-level-of-hotness-hasnow-been-achieved-thanks-katrina-whatwould-i-do-without-my-kay-beauty-products.gif"],"bliss":["https://media.tenor.com/u22AMSBzcPgAAAAM/oh-sweet-bliss-rick.gif","https://media.tenor.com/obWQR_TH2k8AAAAM/bliss-peaceful.gif","https://media.tenor.com/crXTNEmxrIMAAAAM/nienkepien-ignorance-is-bliss.gif"],"cringe":["https://media.tenor.com/DJ8tC3Xc9lQAAAAM/cringecatsmk.gif","https://media.tenor.com/_SMXpRfmNYgAAAAM/cringe-diesfromcringe.gif","https://media.tenor.com/EFG7gviVCV8AAAAM/cringe-awkward.gif"],"nostalgia":["https://media.tenor.com/t_lQU76hYWIAAAAM/mr-bean-mr-bean-nostalgia.gif","https://media.tenor.com/15RmxIzka-EAAAAM/nostalgia-spongebob.gif","https://media.tenor.com/ywGRsxQPQlMAAAAM/mr-bean-nostalgia-mr-bean-tear-smile.gif"],"procrastinate":["https://media.tenor.com/EWgJI1ifUcIAAAAM/jensen-ackles-procrastination.gif","https://media.tenor.com/i4vWlXu8TawAAAAM/procrastination-cat.gif","https://media.tenor.com/_ZM3NuKjhpAAAAAM/procrastination-national-flag.gif"],"scrutinize":["https://media.tenor.com/mCdugq9MohQAAAAM/scrutinize-jayson-gerycz.gif","https://media.tenor.com/EtGe1KWTg-cAAAAM/scrutinize-judge-taylor.gif","https://media.tenor.com/HtUjr8fbgBUAAAAM/cat-scrutiny.gif"],"tremendous":["https://media.tenor.com/6Nt6I18kjT0AAAAM/tremensous-trememdous.gif","https://media.tenor.com/0cDKsGlTeWsAAAAM/tremendous-the-bear.gif","https://media.tenor.com/UYCbRXNKY0cAAAAM/adventure-time-tremendous.gif"],"spontaneous":["https://media.tenor.com/1doihLGHvasAAAAM/colin-firth-spontaneous.gif","https://media.tenor.com/ZLlMCJGEfZEAAAAM/do-something-spontaneous-spontaneous.gif","https://media.tenor.com/ppj9tP7Au-QAAAAM/spontaneous-spontaneous-explosion.gif"],"grudge":["https://media.tenor.com/JFK8C2GT_IcAAAAM/grudge-the-scary-grudge-girl.gif","https://media.tenor.com/75k5ey5tdTkAAAAM/grudge-three.gif","https://media.tenor.com/kJMhMINyTF8AAAAM/whats-that-grudge.gif"],"splurge":["https://media.tenor.com/vh351inXpyoAAAAM/i-splurged-george-walter.gif","https://media.tenor.com/zdmO7B9pv48AAAAM/splurge-ai.gif","https://media.tenor.com/K3mLpwagYX0AAAAM/splurgecity.gif"],"eerie":["https://media.tenor.com/BZUm0s_x4B4AAAAM/eerie-american-psycho.gif","https://media.tenor.com/4-9mu6dugtQAAAAM/golden-girls-eerie.gif","https://media.tenor.com/YZLSjxfRwwIAAAAM/scarecrow-creepy-smile.gif"],"candid":["https://media.tenor.com/t-qg2dRxDCwAAAAM/candid-camera.gif","https://media.tenor.com/o3UiiLNvVMgAAAAM/fake-candid-smiles-fake-smile.gif","https://media.tenor.com/pUqVrpOTlsgAAAAM/caramel-candid-caracan.gif"],"ponder":["https://media.tenor.com/sF-65FzDeFIAAAAM/cat-pondering-cat.gif","https://media.tenor.com/bjM_RJX3YZQAAAAM/pondering-pondering-orb.gif","https://media.tenor.com/NfoRNl7w0DgAAAAM/ponder.gif"],"petty":["https://media.tenor.com/JCm4XATAVn0AAAAM/petty-ete-glass.gif","https://media.tenor.com/HBW208xwVrIAAAAM/petty-im-petty.gif","https://media.tenor.com/N5Sd7dnbpcEAAAAM/prince-petty.gif"],"savvy":["https://media.tenor.com/Imh9TAOUjt8AAAAM/savvy-potc.gif","https://media.tenor.com/UGglViCURtIAAAAM/savvy-captain-jack-sparrow.gif","https://media.tenor.com/omR9UrUvH94AAAAM/metis-savvy.gif"],"mayhem":["https://media.tenor.com/sk_bmfBk5xYAAAAM/dead-mayhem.gif","https://media.tenor.com/Bo7Rus1SbJ0AAAAM/karsonogenic-mayhem.gif","https://media.tenor.com/Hl4aifofIVMAAAAM/mayhem-chaos.gif"],"quirky":["https://media.tenor.com/bCY97HeNdbYAAAAM/quirky.gif","https://media.tenor.com/HX0oRQZRgm4AAAAM/bvoy-quirky.gif","https://media.tenor.com/D9-2D6AQjPcAAAAM/hello-quirky-quirky.gif"],"brag":["https://media.tenor.com/1qCMkvOwFnQAAAAM/hows-bragging-camp-zach-galifianakis.gif","https://media.tenor.com/5HuEmZxvdiEAAAAM/i-dont-wanna-brag-but-i-will-spider-man.gif","https://media.tenor.com/S0tCcC1_198AAAAM/bragging-true.gif"],"flawless":["https://media.tenor.com/g_6LP3GMDS0AAAAM/flawless-hairflip.gif","https://media.tenor.com/hiis3YoJsd4AAAAM/flawless-amanda-holden.gif","https://media.tenor.com/Y8jdRQpGwvwAAAAM/flawless-zendaya.gif"],"setback":["https://media.tenor.com/CW8mI2otXlAAAAAM/the-comeback-is-greater-than-the-setback-im-coming-back-stronger.gif","https://media.tenor.com/_Ocy4A0x77oAAAAM/the-comeback-is-always-better-than-the-setback-mike.gif","https://media.tenor.com/xVSQ5Ie0nL4AAAAM/setback-failure.gif"],"mundane":["https://media.tenor.com/V7m-Flb7CrgAAAAM/sometimes-theres-beauty-in-the-mundane-you-know.gif","https://media.tenor.com/ECbJwtKiHpoAAAAM/mundane-detail-mundane-detail-michael.gif","https://media.tenor.com/DpEY2qLhcpEAAAAM/mundane-nation-mundane.gif"],"rummage":["https://media.tenor.com/KfQ7a-nHd20AAAAM/mickey-mouse-rummaging.gif","https://media.tenor.com/AyfXe_Jm_r4AAAAM/rummaging-aditi-mittal.gif","https://media.tenor.com/PzUuFGhOjYkAAAAM/rummage-alan-becker.gif"],"tenacious":["https://media.tenor.com/kZ4occZvONAAAAAM/storm-the-gates-tenacious-d.gif","https://media.tenor.com/1SQSDRsLR0cAAAAM/tenacious-d.gif","https://media.tenor.com/9TgiUt_BcbMAAAAM/tenacious-d-grohl.gif"],"tantrum":["https://media.tenor.com/GDsh2fNTFjUAAAAM/kid-throwing-tantrum-tantrum.gif","https://media.tenor.com/8CBS67U3kd4AAAAM/tantrum-screaming.gif","https://media.tenor.com/HuBRwKgmvPkAAAAM/temper-tantrum-tantrum.gif"],"elusive":["https://media.tenor.com/Cbabbr8xb3oAAAAM/the-elusive-samurai-yoritsugu.gif","https://media.tenor.com/0fQJMM81g_kAAAAM/the-elusive.gif","https://media.tenor.com/nj2cwmcUU_0AAAAM/the-elusive-samurai-tokiyuki.gif"],"shrug":["https://media.tenor.com/MS6Nldz1TFoAAAAM/elmo-shrugs.gif","https://media.tenor.com/T-rwz3u_2hsAAAAM/shrug-well.gif","https://media.tenor.com/_LU2q0lHxcoAAAAM/welp-shrug.gif"],"frugal":["https://media.tenor.com/mfeaYPByW_EAAAAM/very-frugal-faisal-khan.gif","https://media.tenor.com/nbBZIoYZnTgAAAAM/frugal-financial-independence.gif","https://media.tenor.com/dot6Ocu_X3oAAAAM/recreyo-frugal-aesthetic.gif"],"awe":["https://media.tenor.com/NfklnlW03bIAAAAM/minion-awe.gif","https://media.tenor.com/97ES-3T67BIAAAAM/awe-thank-you.gif","https://media.tenor.com/YZFVDdBxlTYAAAAM/in-awe.gif"],"hectic":["https://media.tenor.com/Z-beECxDOCoAAAAM/its-been-a-bit-hectic-robyn.gif","https://media.tenor.com/38Vw2WGe3b0AAAAM/hectic-mark-wood.gif","https://media.tenor.com/ews-F1Yq4fUAAAAM/its-been-a-bit-hectic-robyn.gif"],"ruthless":["https://media.tenor.com/_gcWHOmawFMAAAAM/ruthless-ruthless-vr.gif","https://media.tenor.com/syiUPCiKA_UAAAAM/ruthless-cruel.gif","https://media.tenor.com/6cdXDwcims8AAAAM/ruthless.gif"],"dazzling":["https://media.tenor.com/sq5-cFbjVGsAAAAM/dazzling-supernatural.gif","https://media.tenor.com/HPlJ4o9gBxYAAAAM/dazzling-queen.gif","https://media.tenor.com/7F24jXKpMJQAAAAM/tobias-menzies-youre-a-dazzling-cabbage.gif"],"mumble":["https://media.tenor.com/ejvsTWHqdawAAAAM/mumble-fuzz.gif","https://media.tenor.com/zFqUikmPMIcAAAAM/mumbles.gif","https://media.tenor.com/wL1G_WwnM40AAAAM/lets-get-ready-mumble.gif"],"genuine":["https://media.tenor.com/1aX34lXRVcAAAAAM/pretty-genuine-steve-terreberry.gif","https://media.tenor.com/uoGPzOMv5DAAAAAM/genuine-human-gifkaro.gif","https://media.tenor.com/9YMLoHLqEcYAAAAM/genuine-concern.gif"],"dilemma":["https://media.tenor.com/F9F60ed8gugAAAAM/dilemma-dilemaa.gif","https://media.tenor.com/ddldm5kS6ggAAAAM/dilemma-unsure.gif","https://media.tenor.com/FMAwvnFNBOAAAAAM/dilemma.gif"],"oblivious":["https://media.tenor.com/6c6Lnz-l10sAAAAM/people-are-oblivious-to-the-reality-henry-singleton.gif","https://media.tenor.com/xLQJzMZTtDgAAAAM/84e-oblivious.gif","https://media.tenor.com/lcptEXyjsbIAAAAM/oblivious-fight.gif"],"lavish":["https://media.tenor.com/s1ELqQCjRM0AAAAM/jay-aston-lavish.gif","https://media.tenor.com/ltFEznLSa7wAAAAM/were-living-lavish-rubbing-hands.gif","https://media.tenor.com/QVqGmHbCv_4AAAAM/lucinda-lavish-date-everything.gif"],"subtle":["https://media.tenor.com/mKkdnqtts6UAAAAM/shca-subtle.gif","https://media.tenor.com/SKwCgrIej38AAAAM/subtly-spell.gif","https://media.tenor.com/K7sllzvFlyEAAAAM/not-so-subtle-sara-coda.gif"],"stumble":["https://media.tenor.com/TTQF7ubqYbsAAAAM/stumble-shake.gif","https://media.tenor.com/uB5ijGdseFwAAAAM/stumble-haha.gif","https://media.tenor.com/W2V1d2oB-pMAAAAM/stumble-nbc.gif"],"inevitable":["https://media.tenor.com/J1-yqJq-Hw4AAAAM/thanos-inevitable.gif","https://media.tenor.com/7JbIEHwzZIkAAAAM/it-was-inevitable-wasnt-it-jules-breach.gif","https://media.tenor.com/wchc4woB_2sAAAAM/i-am-inevitable-thanos.gif"],"wobble":["https://media.tenor.com/NQHU4cR-_GQAAAAM/john-k-wobble-john-corsetti.gif","https://media.tenor.com/Done04cEZOwAAAAM/wobble-fast.gif","https://media.tenor.com/7A7vxhrHSz8AAAAM/wobbly-cat-wobble-cat.gif"],"embrace":["https://media.tenor.com/LvP6oaqAjEoAAAAM/ricky123-embrace.gif","https://media.tenor.com/kR9mKzwWqwMAAAAM/genshin-embrace.gif","https://media.tenor.com/fvzxm5X-8yIAAAAM/hug-embrace.gif"],"vulnerable":["https://media.tenor.com/GbkLPjD0VLsAAAAM/scared-vulnerable.gif","https://media.tenor.com/hamrVYS20IYAAAAM/tim-ross-captain-vulnerable.gif","https://media.tenor.com/YsB8UkL5-0MAAAAM/honesty-and-vulnerablility-bebe-rexha.gif"],"anticipate":["https://media.tenor.com/oAiPLhC9ePQAAAAM/anticipate-marques-king.gif","https://media.tenor.com/mQqf9NwD_4IAAAAM/i-did-not-anticipate-expect.gif","https://media.tenor.com/yCEWekZlLMwAAAAM/i-anticipate-problems-problem.gif"],"sloppy":["https://media.tenor.com/fDx5KekrHNwAAAAM/sloppy-dance-moms.gif","https://media.tenor.com/JjSstlsH2RwAAAAM/sloppy-eating.gif","https://media.tenor.com/-N8pBKlxstUAAAAM/sloppy-joe-hot-dog-food.gif"],"wary":["https://media.tenor.com/bdCtkPaReiwAAAAM/be-wary-obi-wan-kenobi.gif","https://media.tenor.com/kslN3o9eL4sAAAAM/wary-emoji.gif","https://media.tenor.com/M7w1DDLmcHUAAAAM/gary-wary.gif"],"whimsical":["https://media.tenor.com/hI2XtdImU4EAAAAM/whimsical.gif","https://media.tenor.com/4VCT4R1qf1IAAAAM/fullofwhimsy-fun-and-whimsy.gif","https://media.tenor.com/G9UxoQQwVYAAAAAM/whimsical-coryinfinite.gif"],"dwell":["https://media.tenor.com/gncKNKKWqhMAAAAM/willow-i-dwell-in-darkness-without-you.gif","https://media.tenor.com/h9INUwyHu_wAAAAM/libra-dwell.gif","https://media.tenor.com/iqByzBJL4X8AAAAM/it-does-not-dd-to-dwell-on-dreamsand-forget-to-live-clothing.gif"],"ambiguous":["https://media.tenor.com/PyfXG8oYSdgAAAAM/ambiguity-ambiguous.gif","https://media.tenor.com/nJdr9x2ZdtcAAAAM/ambiguous-disorder-succession.gif","https://media.tenor.com/jpFL92qUsrQAAAAM/ambiguous-simple.gif"],"diligent":["https://media.tenor.com/4-AWWDFlmgwAAAAM/diligent-dilipigeon.gif","https://media.tenor.com/VqgTD5yEW5YAAAAM/diligent-heathcliff.gif","https://media.tenor.com/-mYtgb19DtIAAAAM/i-did-all-my-due-diligence-jonathan-young.gif"],"peculiar":["https://media.tenor.com/G0EhyUdWBiYAAAAM/peculiar-batman.gif","https://media.tenor.com/mjDwDJjC1IYAAAAM/cat-peculiar.gif","https://media.tenor.com/cylO6DgmpCcAAAAM/peculiar-warframe.gif"],"frantic":["https://media.tenor.com/qHAtK4zFnw4AAAAM/frantic-ah.gif","https://media.tenor.com/6BtLpKNuluUAAAAM/busy-frantic.gif","https://media.tenor.com/wnm07-6zOb0AAAAM/frantic-old-lady.gif"],"thrilled":["https://media.tenor.com/g01ZoVmcYJYAAAAM/im-thrilled-gordon-ford.gif","https://media.tenor.com/Nbv1SysxlrUAAAAM/heavenly-joy-jerkins-i-am-so-excited.gif","https://media.tenor.com/U1XOzoJ1LXoAAAAM/jonah-hill-excited.gif"],"gloomy":["https://media.tenor.com/LuRLVz3owo4AAAAM/gloomy-absolute-gloomy.gif","https://media.tenor.com/INXjdJcdPZIAAAAM/eeyore-gloomy.gif","https://media.tenor.com/2E_YwDz3v9AAAAAM/eeyore-gloomy-day.gif"],"tedious":["https://media.tenor.com/ihJUPQO3xeAAAAAM/this-is-tedious-piximperfect.gif","https://media.tenor.com/hIyGm-iFtcUAAAAM/i-find-it-tedious-shane-luis.gif","https://media.tenor.com/rqBaNeZhP-wAAAAM/it-get-tedious-huh-its-gets-boring.gif"],"sincere":["https://media.tenor.com/7LNXlhvr4RkAAAAM/sincere-love-island.gif","https://media.tenor.com/UPkF3mJ8L50AAAAM/sincere-love-island-love-island.gif","https://media.tenor.com/96g5jWSwhWUAAAAM/very-sincere-heartfelt.gif"],"nuance":["https://media.tenor.com/RGNqhO2JtkgAAAAM/nuance-spongebob.gif","https://media.tenor.com/ImJPq3xbU50AAAAM/nuance-bob.gif","https://media.tenor.com/MYjNljPcAugAAAAM/nuance-is-a-thing-jessie-gender.gif"],"cozy":["https://media.tenor.com/gsYPN_c51M4AAAAM/cozy-comfortable.gif","https://media.tenor.com/p4SDHNrKBvUAAAAM/cozy-comfy.gif","https://media.tenor.com/_KL7-qclnnAAAAAM/cozy-season-fall-cozy-season.gif"],"impulsive":["https://media.tenor.com/0pIbeRtSul4AAAAM/hannibal-mayhavebeenimpulsive.gif","https://media.tenor.com/jMOjcnJ6dV0AAAAM/impulsive-ami-dunni-mcclure.gif","https://media.tenor.com/LnfhLrbCsrgAAAAM/you-are-very-impulsive-parth-samthaan.gif"],"blunt":["https://media.tenor.com/uCuLXfV2SJ0AAAAM/bluntandhonest-fake-friends.gif","https://media.tenor.com/6GjNPcQezGMAAAAM/honesty-text.gif","https://media.tenor.com/z4jB0TQelKQAAAAM/if-im-holding-the-truth-stick-moira.gif"],"knack":["https://media.tenor.com/iVA7hBTg7iwAAAAM/i-have-a-knack-for-that-spider-man-2.gif","https://media.tenor.com/xel77KbS5jkAAAAM/knack-zapped.gif","https://media.tenor.com/1_bpnH0ScMAAAAAM/bugsnax-knack.gif"],"linger":["https://media.tenor.com/4SWHDPjTM80AAAAM/linger-pineapple-express.gif","https://media.tenor.com/xNtHXjqsvwIAAAAM/linger-dolores-oriordan.gif","https://media.tenor.com/H5YWX-V3MrQAAAAM/linger-lingerer.gif"],"cherish":["https://media.tenor.com/BsrEmyOe214AAAAM/cherish-the-memories.gif","https://media.tenor.com/h-kAnIXl760AAAAM/cherish-it-love-it.gif","https://media.tenor.com/ym0PlbDeQIsAAAAM/ill-always-cherish-what-weve-had-together-miley-cyrus.gif"],"fluke":["https://media.tenor.com/Ml0PMzIZBXAAAAAM/lucky-fluke-jtoh.gif","https://media.tenor.com/kts70uH7aHkAAAAM/i-still-say-that-was-dumb-luck-branch.gif","https://media.tenor.com/Vs33ZrtI3AoAAAAM/luck-has-nothing-to-do-with-it-rip-digman.gif"],"nag":["https://media.tenor.com/GcMfOfojXcIAAAAM/nag-nagging.gif","https://media.tenor.com/r_fKlBhtChUAAAAM/stop-nagging-jeremy.gif","https://media.tenor.com/0Nz4ovGuYGEAAAAM/talktomyhand-hand.gif"],"upbeat":["https://media.tenor.com/_0yhURUXVg8AAAAM/happy-birthday.gif","https://media.tenor.com/SypCDAyaW94AAAAM/omori-coping.gif","https://media.tenor.com/ZMv8b47pb8wAAAAM/happy-birthday-happy-anniversary.gif"],"scarce":["https://media.tenor.com/zrS5RROU6_IAAAAM/scarcity-scarce.gif","https://media.tenor.com/Udmbqth-X5kAAAAM/no-shortage-of-nerve-cells-consciousness-is-scarce.gif","https://media.tenor.com/p5MDUCqAKK4AAAAM/water-is-getting-scarce-scarcity.gif"],"zealous":["https://media.tenor.com/MRX6SVX5emcAAAAM/zeal-seal.gif","https://media.tenor.com/ei_6HGqeWAAAAAAM/zeal-ginjoka.gif","https://media.tenor.com/ftB9JzsknV0AAAAM/zeal-zeal-ginjoka.gif"]};
 const BASE=[
 ['serendipity','щаслива випадковість|щасливий випадок'],['hindsight','заднім числом|запізніле розуміння|погляд у минуле'],
 ['loophole','лазівка'],['gullible','довірливий|легковірний|наївний'],
@@ -151,7 +148,7 @@ const BASE=[
 ['witty','дотепний'],['shallow','мілкий|поверховий|неглибокий'],
 ['fierce','лютий|запеклий|шалений'],['outrageous','обурливий|скандальний|епатажний'],
 ['breathtaking','захопливий|приголомшливий|дух захоплює'],['pristine','незайманий|бездоганний|первозданний'],
-['reckless','безрозсудний|необачний|нерозважливий'],['tipsy','напідпитку|підпилий|п\'яненький'],
+['reckless','безрозсудний|необачний|нерозважливий'],['tipsy',"напідпитку|підпилий|п'яненький"],
 ['wholesome','душевний|світлий|добрий|корисний|здоровий'],['yearn','тужити|прагнути|жадати'],
 ['hilarious','дуже смішний|кумедний|сміховинний'],['vague','розмитий|туманний|невиразний|нечіткий'],
 ['versatile','різнобічний|універсальний|багатогранний'],['feasible','здійсненний|реальний|можливий'],
@@ -194,42 +191,23 @@ const ICON_CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function defaults(){return {w:{},custom:[],day:{d:'',n:0},pausedUntil:0,pauseReason:'',perDay:2,gap:30,current:null,solved:0}}
+function defaults(){return {turn:{d:-1,i:0},count:{d:-1,n:{}},current:null}}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s)return Object.assign(defaults(),s)}catch(e){}return defaults()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
-let state=load(), view='task', fb=null, lastResult=null;
+let state=load(), view='task', fb=null, last=null;
 
-function today(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
 function toWord([en,ua]){const e=en.split('|');return {key:e[0],en:e,ua:ua.split('|')}}
-function allWords(){return state.custom.concat(BASE).map(toWord)}
-// Day 0 is 2 Nov 2026; everyone gets the same two words on the same calendar day.
+// Day 0 is 2 Nov 2026; everyone gets the same three words on the same calendar day.
 function dayNum(){const d=new Date();return Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(2026,10,2))/DAY)}
-function todayWords(){const n=dayNum(),L=BASE.length,m=i=>((i%L)+L)%L;return [BASE[m(2*n)],BASE[m(2*n+1)]].map(toWord)}
-function findWord(k){return allWords().find(x=>x.key===k)}
-function appName(){return APPS[location.hash.slice(1).toLowerCase()]||null}
-function fmtTime(ts){return new Date(ts).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})}
+function dayWords(n){const L=BASE.length,m=i=>((i%L)+L)%L;return [0,1,2].map(j=>toWord(BASE[m(PER_DAY*n+j)]))}
+function todayWords(){return dayWords(dayNum())}
+function findWord(k){return todayWords().find(x=>x.key===k)}
+function app(){return APPS[location.hash.slice(1).toLowerCase()]||null}
 function fmtDate(ts){return new Date(ts).toLocaleDateString('uk-UA',{day:'numeric',month:'long'})}
-function fmtGap(m){return m<60?m+' хв':(m/60)+' год'}
-function letters(n){const a=n%10,b=n%100;return (a>=2&&a<=4&&(b<12||b>14))?'літери':'літер'}
+function plural(n,one,few,many){const a=n%10,b=n%100;return a===1&&b!==11?one:(a>=2&&a<=4&&(b<12||b>14))?few:many}
+function counts(){return state.count.d===dayNum()?state.count.n:{}}
 
-function norm(s,lang){
-  let t=String(s).toLowerCase().normalize('NFC').replace(/[’‘`ʼ]/g,"'").replace(/[.,!?;:"«»()\-–—]/g,' ').replace(/\s+/g,' ').trim();
-  if(lang==='en')t=t.replace(/^(to|a|an|the) /,'');
-  return t;
-}
-function lev(a,b){
-  const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i]);
-  for(let j=1;j<=n;j++)d[0][j]=j;
-  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
-  return d[m][n];
-}
-// 2 = exact, 1 = one typo in a long word, 0 = wrong
-function match(ans,variants,lang){
-  const a=norm(ans,lang);if(!a)return 0;
-  if(variants.some(v=>norm(v,lang)===a))return 2;
-  if(variants.some(v=>{const n=norm(v,lang);return n.length>=5&&lev(a,n)<=1}))return 1;
-  return 0;
-}
+function norm(s){return String(s).toLowerCase().normalize('NFC').replace(/[’‘`ʼ]/g,"'").replace(/[.,!?;:"«»()\-–—]/g,' ').replace(/\s+/g,' ').trim().replace(/^(to|a|an|the) /,'')}
 function shuffle(arr){
   const src=arr.join('');let a=arr.slice();
   for(let k=0;k<12;k++){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}if(a.join('')!==src)break}
@@ -237,136 +215,104 @@ function shuffle(arr){
 }
 function say(text){try{const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
 
-function stageTask(x){
-  const s=state.w[x.key].s;
-  const kind=s===1?'intro':s===2?'puzzle':'write';
-  return {key:x.key,kind,review:false,fails:0,revealed:false};
+// Each visit takes the next of today's three words: 1, 2, 3, 1, 2, 3...
+function pick(){
+  const d=dayNum();
+  if(state.turn.d!==d)state.turn={d,i:0};
+  const w=todayWords()[state.turn.i%PER_DAY];
+  return {key:w.key,step:1,fails:0,revealed:false,meme:0};
 }
-function reviewTask(x){return {key:x.key,kind:['write','puzzle'][Math.floor(Math.random()*2)],review:true,fails:0,revealed:false}}
-function pickTask(){
-  const now=Date.now(),words=allWords();
-  const prog=words.filter(x=>state.w[x.key]&&state.w[x.key].s!=='done').sort((a,b)=>state.w[a.key].next-state.w[b.key].next);
-  const ready=prog.filter(x=>state.w[x.key].next<=now);
-  if(ready.length)return stageTask(ready[0]);
-  const fresh=todayWords().find(x=>!state.w[x.key]);
-  if(fresh){state.w[fresh.key]={s:1,next:now};return stageTask(fresh)}
-  const learned=words.filter(x=>state.w[x.key]&&state.w[x.key].s==='done');
-  const due=learned.filter(x=>state.w[x.key].due<=now).sort((a,b)=>state.w[a.key].due-state.w[b.key].due);
-  if(due.length)return reviewTask(due[0]);
-  if(prog.length)return stageTask(prog[0]);
-  if(learned.length)return reviewTask(learned[Math.floor(Math.random()*learned.length)]);
-  return reviewTask(todayWords()[0]);
-}
-
-function complete(t,note){
-  const p=state.w[t.key],now=Date.now();let next='';
-  if(p&&!t.review){
-    if(t.revealed){p.next=now;next='Цей крок повториться наступного разу.'}
-    else if(p.s<3){p.s++;p.next=now+state.gap*MIN;next='Наступний крок цього слова через '+fmtGap(state.gap)+'.'}
-    else{p.s='done';p.lvl=0;p.due=now+DAY;next='Слово вивчене. Повторимо завтра.'}
-  }else if(p){
-    if(t.revealed){p.lvl=0;p.due=now+state.gap*MIN;next='Повторимо ще сьогодні.'}
-    else{p.lvl=Math.min((p.lvl||0)+1,4);p.due=now+[1,3,7,14,30][p.lvl]*DAY;next='Наступне повторення '+fmtDate(p.due)+'.'}
-  }
-  state.solved++;lastResult={w:findWord(t.key),note,next};state.current=null;fb=null;view='success';save();render();
+function finish(t){
+  const d=dayNum();
+  if(state.count.d!==d)state.count={d,n:{}};
+  state.count.n[t.key]=(state.count.n[t.key]||0)+1;
+  state.turn.i++;state.current=null;fb=null;last=findWord(t.key);view='done';save();render();
+  window.scrollTo(0,0);
 }
 function fail(t,w){
   t.fails++;
-  if(t.kind==='puzzle')t.placed=[];
-  if(t.fails>=2&&!t.revealed&&t.kind!=='intro'){t.revealed=true;fb={cls:'bad',text:'Ось правильна відповідь. Повтори її, щоб пройти далі.'}}
-  else if(t.kind==='intro')fb={cls:'bad',text:'Не те. Переклад написаний вище.'};
-  else fb={cls:'bad',text:'Не те. Починається на «'+w.key[0]+'», '+w.key.length+' '+letters(w.key.length)+'.'};
+  if(t.step===1)fb={cls:'bad',text:'Не збігається. Перепиши слово точно, як вище.'};
+  else{
+    t.placed=[];
+    if(t.fails>=2&&!t.revealed){t.revealed=true;fb={cls:'bad',text:'Ось правильне слово. Склади його, щоб пройти далі.'}}
+    else fb={cls:'bad',text:'Не те. Починається на «'+w.key[0]+'», '+w.key.length+' '+plural(w.key.length,'літера','літери','літер')+'.'};
+  }
   save();render();
   const c=$('#gate .card');if(c){c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake')}
   const inp=$('#ans');if(inp)inp.focus();
 }
 
 function updateMeta(){
-  const learned=allWords().filter(x=>state.w[x.key]&&state.w[x.key].s==='done').length;
-  $('#meta').textContent='слова дня № '+(dayNum()+1)+' · вивчено '+learned;
+  const total=Object.values(counts()).reduce((a,b)=>a+b,0);
+  $('#meta').textContent='слова дня № '+(dayNum()+1)+' · сьогодні '+total;
 }
-function fromLine(){
-  const app=appName();
-  return app?'<p class="from">Перед тим як відкрити <strong>'+esc(app)+'</strong>, одне слово.</p>':'<p class="from">Одне слово, і можна далі.</p>';
+function memeHTML(w,i){
+  const list=MEMES[w.key]||[];if(!list.length)return '';
+  return '<figure class="meme"><img id="meme-img" src="'+esc(list[i%list.length])+'" alt="Мем до слова '+esc(w.key)+'" referrerpolicy="no-referrer">'+
+    (list.length>1?'<button type="button" class="other" id="other">Інший мем</button>':'')+'</figure>';
 }
 function render(){
-  const now=Date.now(),gate=$('#gate');
   updateMeta();
-  const paused=state.pausedUntil>now;
-  $('#controls').hidden=paused;
-  if(paused){
-    const why=state.pauseReason==='call'?'Ти на дзвінку, тож слова не заважатимуть 30 хвилин.':'Слова вимкнені. Застосунки відкриваються без завдань.';
-    gate.innerHTML='<div class="card done"><div class="lang">пауза</div><h2 class="done-title">До '+fmtTime(state.pausedUntil)+'</h2><p>'+why+'</p></div><button class="btn ghost" type="button" id="resume">Увімкнути зараз</button>';
+  const gate=$('#gate');
+  if(view==='done'&&last){
+    const a=app()||APPS.instagram,n=counts()[last.key]||1;
+    const run=(name,text)=>'shortcuts://run-shortcut?name='+encodeURIComponent(name)+(text?'&input=text&text='+encodeURIComponent(text):'');
+    gate.innerHTML='<div class="card done"><div class="tick">'+ICON_CHECK+'</div><h2 class="done-title">Зараховано</h2><p class="recap"><span lang="en">'+esc(last.key)+'</span> — '+esc(last.ua[0])+'</p><p class="hint">Сьогодні це слово пройдено '+n+' '+plural(n,'раз','рази','разів')+'.</p></div>'+
+      '<div class="stack"><a class="btn" href="'+run(DONE_SHORTCUT,a.url)+'">Відкрити '+esc(a.name)+'</a><a class="btn ghost" href="'+run(HOME_SHORTCUT)+'">Закрити '+esc(a.name)+'</a></div>';
     return;
   }
-  if(view==='success'&&lastResult){
-    const r=lastResult,app=appName();
-    gate.innerHTML='<div class="card done"><div class="tick">'+ICON_CHECK+'</div><h2 class="done-title">Зараховано</h2><p>'+(app?esc(app)+' відкрито. Можна повертатися.':'Можна йти далі.')+'</p><p class="recap"><span lang="en">'+esc(r.w.key)+'</span> — '+esc(r.w.ua[0])+'</p>'+(r.note?'<p class="hint">'+esc(r.note)+'</p>':'')+'<p class="hint">'+esc(r.next)+'</p></div><button class="btn ghost" type="button" id="more">Ще одне слово</button>';
-    return;
-  }
-  if(!state.current||!findWord(state.current.key)){state.current=pickTask();save()}
-  renderTask(gate);
-}
-function renderTask(gate){
-  const t=state.current,w=findWord(t.key);
-  const n=t.kind==='intro'?1:t.kind==='write'?3:2;
-  const label=t.review?'Повторення':'Крок '+n+' з 3 · '+['','знайомство','з літер','написання'][n];
-  const dots=t.review?'':'<span class="dots">'+[1,2,3].map(i=>'<i class="'+(i<=n?'on':'')+'"></i>').join('')+'</span>';
+  if(!state.current||!findWord(state.current.key)){state.current=pick();save()}
+  const t=state.current,w=findWord(t.key),a=app();
+  const from=a?'<p class="from">Перед тим як відкрити <strong>'+esc(a.name)+'</strong>, одне слово.</p>':'<p class="from">Одне слово, і можна далі.</p>';
+  const dots='<span class="dots">'+[1,2].map(i=>'<i class="'+(i<=t.step?'on':'')+'"></i>').join('')+'</span>';
+  const label=t.step===1?'Крок 1 з 2 · запам’ятай':'Крок 2 з 2 · з літер';
   const listen='<button type="button" class="listen" data-say="'+esc(w.key)+'">'+ICON_SPEAK+'<span>Послухати</span></button>';
-  let prompt,body;
-  if(t.kind==='intro'){
-    prompt='<div class="prompt"><div class="lang">нове слово</div><div class="word" lang="en">'+esc(w.key)+'</div><div class="row">'+listen+'</div><div class="gloss">'+esc(w.ua.join(', '))+'</div></div>';
+  let body;
+  if(t.step===1){
+    body=memeHTML(w,t.meme)+'<div class="prompt"><div class="word" lang="en">'+esc(w.key)+'</div><div class="row">'+listen+'</div><div class="gloss">'+esc(w.ua.join(', '))+'</div></div>'+
+      '<form id="f" class="answer-form" autocomplete="off"><label class="task" for="ans">Напиши це слово англійською</label>'+
+      '<input id="ans" class="answer" type="text" lang="en" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="англійською">'+
+      '<button class="btn" type="submit">Далі</button></form>';
   }else{
-    prompt='<div class="prompt"><div class="lang">українською</div><div class="word">'+esc(w.ua[0])+'</div></div>';
-  }
-  const reveal=t.revealed?'<div class="reveal"><span class="lang">правильно</span><strong lang="en">'+esc(w.key)+'</strong>'+listen+'</div>':'';
-  if(t.kind==='puzzle'){
     if(!t.tiles){t.tiles=shuffle(w.key.split(''));t.placed=[];save()}
     const slots=t.tiles.map((_,i)=>t.placed[i]!==undefined?'<span class="slot filled">'+esc(t.tiles[t.placed[i]])+'</span>':'<span class="slot"></span>').join('');
     const tiles=t.tiles.map((ch,i)=>'<button type="button" class="tile" data-i="'+i+'"'+(t.placed.includes(i)?' disabled':'')+' aria-label="Літера '+esc(ch)+'">'+esc(ch)+'</button>').join('');
-    body='<p class="task">Склади слово англійською</p>'+reveal+'<div class="slots" aria-label="Твоє слово">'+slots+'</div><div class="tiles">'+tiles+'</div><div class="row"><button type="button" class="btn ghost small" id="undo">Стерти літеру</button></div>';
-  }else{
-    const en=t.kind!=='intro';
-    const taskText=t.kind==='intro'?'Напиши переклад українською':'Напиши це слово англійською';
-    body='<form id="f" class="answer-form" autocomplete="off"><label class="task" for="ans">'+taskText+'</label>'+reveal+
-      '<input id="ans" class="answer" type="text" lang="'+(en?'en':'uk')+'" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="'+(en?'англійською':'українською')+'">'+
-      '<button class="btn" type="submit">Перевірити</button></form>';
+    const reveal=t.revealed?'<div class="reveal"><span class="lang">правильно</span><strong lang="en">'+esc(w.key)+'</strong>'+listen+'</div>':'';
+    body='<div class="prompt"><div class="lang">українською</div><div class="word">'+esc(w.ua[0])+'</div></div>'+memeHTML(w,t.meme)+
+      '<p class="task">Склади це слово англійською</p>'+reveal+'<div class="slots" aria-label="Твоє слово">'+slots+'</div><div class="tiles">'+tiles+'</div>'+
+      '<div class="row"><button type="button" class="btn ghost small" id="undo">Стерти літеру</button></div>';
   }
-  gate.innerHTML=fromLine()+'<div class="card"><div class="step"><span>'+label+'</span>'+dots+'</div>'+prompt+body+'<p class="feedback'+(fb?' '+fb.cls:'')+'" role="status">'+(fb?esc(fb.text):'')+'</p></div>';
+  gate.innerHTML=from+'<div class="card"><div class="step"><span>'+label+'</span>'+dots+'</div>'+body+'<p class="feedback'+(fb?' '+fb.cls:'')+'" role="status">'+(fb?esc(fb.text):'')+'</p></div>';
+  const img=$('#meme-img');
+  if(img){let tries=0;img.addEventListener('error',()=>{const list=MEMES[w.key];if(++tries<list.length){t.meme++;img.src=list[t.meme%list.length]}else img.closest('.meme').hidden=true})}
 }
 
 /* sheets */
 function openSheet(name){
   const b=$('#sheet-body');
-  if(name==='off'){
-    b.innerHTML='<h2>Вимкнути слова?</h2><p>Instagram, TikTok і Telegram відкриватимуться без завдань.</p><div class="stack"><button class="btn danger" type="button" data-off="1h">На 1 годину</button><button class="btn danger" type="button" data-off="morning">До ранку</button><button class="btn ghost" type="button" data-close>Залишити</button></div>';
-  }else if(name==='dict'){
-    const opt=(vals,cur,fmt)=>vals.map(v=>'<option value="'+v+'"'+(v===cur?' selected':'')+'>'+fmt(v)+'</option>').join('');
-    const li=x=>{
-      const p=state.w[x.key];let chip='<span class="chip">нове</span>';
-      if(p&&p.s==='done')chip='<span class="chip done">вивчено · '+fmtDate(p.due)+'</span>';
-      else if(p)chip='<span class="chip go">крок '+p.s+' з 3</span>';
-      return '<li><span class="li-en" lang="en">'+esc(x.en.join(' / '))+'</span><span class="li-ua">'+esc(x.ua.join(', '))+'</span>'+chip+'</li>';
-    };
-    const tw=todayWords(),twk=tw.map(x=>x.key);
-    const mine=allWords().filter(x=>state.w[x.key]&&!twk.includes(x.key));
-    b.innerHTML='<h2>Словник</h2><h3>Слова дня № '+(dayNum()+1)+' · '+fmtDate(Date.now())+'</h3><p class="hint">Сьогодні в усіх, хто вчить «Одне слово», ці самі два слова. Завтра будуть нові.</p><ul class="list">'+tw.map(li).join('')+'</ul>'+
+  if(name==='dict'){
+    const n=dayNum(),c=counts();
+    const li=x=>{const m=(MEMES[x.key]||[])[0],k=c[x.key]||0;
+      return '<li>'+(m?'<img class="thumb" src="'+esc(m)+'" alt="" referrerpolicy="no-referrer" loading="lazy">':'<span class="thumb"></span>')+
+        '<span class="li-en" lang="en">'+esc(x.en.join(' / '))+'</span><span class="li-ua">'+esc(x.ua.join(', '))+'</span><span class="chip'+(k?' go':'')+'">'+k+' '+plural(k,'раз','рази','разів')+'</span></li>'};
+    let past='';
+    for(let k=n-1;k>=Math.max(0,n-14);k--)past+='<li><b>№ '+(k+1)+' · '+fmtDate(Date.now()-(n-k)*DAY)+'</b>'+dayWords(k).map(x=>esc(x.key)).join(', ')+'</li>';
+    b.innerHTML='<h2>Слова дня № '+(n+1)+'</h2><p class="hint">'+fmtDate(Date.now())+'. Сьогодні в усіх ці самі три слова. Кожен вхід дає наступне з них по колу.</p><ul class="list">'+todayWords().map(li).join('')+'</ul>'+
       '<button class="btn" type="button" id="share">Поділитися з друзями</button><p class="feedback" id="share-fb" role="status"></p>'+
-      '<div class="settings"><label for="gap">Між кроками одного слова</label><select id="gap">'+opt([15,30,60,120],state.gap,fmtGap)+'</select></div>'+
-      '<form id="add" class="stack" autocomplete="off"><h3>Додати своє слово</h3><input id="add-en" class="answer" lang="en" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="англійською, напр. thoughtful" aria-label="Слово англійською"><input id="add-ua" class="answer" lang="uk" placeholder="переклад, кілька через кому" aria-label="Переклад українською"><button class="btn" type="submit">Додати</button><p class="feedback" id="add-fb" role="status"></p></form>'+
-      (mine.length?'<h3>Мої слова · '+mine.length+'</h3><ul class="list">'+mine.map(li).join('')+'</ul>':'')+
+      (past?'<h3>Минулі дні</h3><ul class="past">'+past+'</ul>':'')+
       '<button class="btn ghost" type="button" data-close>Закрити</button>';
   }else{
-    b.innerHTML='<h2>Як підключити</h2><p>Сторінка відкривається сама, коли ти заходиш в Instagram, TikTok чи Telegram. Це робить автоматизація в «Командах» на iPhone.</p>'+
-      '<ol class="steps"><li>«Команди» → «Автоматизація» → «+» → «Застосунок».</li><li>Вибери Instagram, TikTok, Telegram, познач «Відкрито» і «Запускати одразу».</li><li>Дія «Відкрити URL» з посиланням на цю сторінку. Якщо в кінці дописати <code>#instagram</code>, <code>#tiktok</code> чи <code>#telegram</code>, сторінка покаже, який застосунок чекає.</li></ol>'+
-      '<h3>Щоб не вискакувало по колу</h3><p>Сторінка вискакує щоразу, коли заходиш у застосунок. Але після відповіді ти повертаєшся в Instagram, і автоматизація спрацює знову, без кінця. Тому перед «Відкрити URL» додай перевірку: якщо слово було менше ніж 2 хвилини тому, пропустити.</p>'+
-      '<ol class="steps"><li>«Отримати файл» (Get File): шлях <code>slovo.txt</code>, вимкни помилку, якщо файлу немає.</li><li>«Якщо» файл має будь-яке значення: «Отримати час між датами» від файлу до поточної дати в хвилинах. Якщо менше 2, «Зупинити цю команду».</li><li>Після цього збережи поточну дату у <code>slovo.txt</code> із заміною і тоді «Відкрити URL».</li></ol>'+
+    b.innerHTML='<h2>Як підключити</h2><p>Робиться один раз у застосунку «Команди» на iPhone: дві маленькі команди й автоматизація.</p>'+
+      '<h3>1. Команда «'+DONE_SHORTCUT+'»</h3><ol class="steps"><li>«Команди» → «+». Назва точно <code>'+DONE_SHORTCUT+'</code>.</li><li>Дія «Текст» зі змінною «Поточна дата». Торкнись змінної й вибери формат ISO 8601 з часом.</li><li>«Зберегти файл» (Save File): шлях <code>slovo.txt</code>, вимкни «Запитувати, куди зберегти», увімкни «Замінити».</li><li>«Відкрити URL» (Open URLs) зі змінною «Вхідні дані команди» (Shortcut Input).</li></ol>'+
+      '<h3>2. Команда «'+HOME_SHORTCUT+'»</h3><ol class="steps"><li>Нова команда, назва точно <code>'+HOME_SHORTCUT+'</code>, одна дія «На головний екран» (Go to Home Screen).</li></ol>'+
+      '<h3>3. Автоматизація</h3><ol class="steps"><li>«Автоматизація» → «+» → «Застосунок» → Instagram, «Відкрито», «Запускати одразу».</li><li>«Отримати файл» (Get File): шлях <code>slovo.txt</code>, вимкни помилку, якщо файлу немає.</li><li>«Якщо» файл має будь-яке значення: «Отримати час між датами» від файлу до поточної дати в секундах. Усередині ще одне «Якщо» менше 30 → «Зупинити цю команду».</li><li>Після обох «Якщо»: «Відкрити URL» <code>'+SITE+'#instagram</code>.</li><li>Так само для TikTok з <code>#tiktok</code> і Telegram з <code>#telegram</code>.</li></ol>'+
+      '<p class="hint">30 секунд потрібні лише для того, щоб кнопка «Відкрити Instagram» не запускала слово знову. Наступний вхід уже дає нове слово.</p>'+
+      '<p class="hint">Перший раз Safari спитає, чи відкрити «Команди»: натисни «Відкрити». Щоб вкладки не накопичувались: Параметри → Safari → «Закривати вкладки» → «Через день».</p>'+
       '<button class="btn ghost" type="button" data-close>Зрозуміло</button>';
   }
   $('#sheet').hidden=false;
 }
 function closeSheet(){$('#sheet').hidden=true;$('#sheet-body').innerHTML=''}
-function pause(until,reason){state.pausedUntil=until;state.pauseReason=reason;save();closeSheet();render()}
 
 document.addEventListener('click',e=>{
   const el=e.target.closest('button,[data-close]');if(!el)return;
@@ -374,61 +320,34 @@ document.addEventListener('click',e=>{
   if(el.hasAttribute('data-close'))return closeSheet();
   if(el.dataset.open)return openSheet(el.dataset.open);
   if(el.dataset.say)return say(el.dataset.say);
-  if(el.dataset.off){
-    let until=Date.now()+60*MIN;
-    if(el.dataset.off==='morning'){const d=new Date();d.setHours(7,0,0,0);if(d<=new Date())d.setDate(d.getDate()+1);until=d.getTime()}
-    $('#sheet-body').innerHTML='<h2>Точно?</h2><p>Слова не вискакуватимуть до '+fmtTime(until)+'.</p><div class="stack"><button class="btn danger" type="button" id="sure" data-until="'+until+'" lang="en">I am sure</button><button class="btn ghost" type="button" data-close>Ні, залишити</button></div>';
+  if(el.id==='other'&&t){t.meme++;save();const w=findWord(t.key),list=MEMES[w.key];$('#meme-img').src=list[t.meme%list.length];return}
+  if(el.id==='undo'&&t&&t.placed&&t.placed.length){t.placed.pop();fb=null;save();return render()}
+  if(el.id==='share'){
+    const url=SITE,out=$('#share-fb');
+    const text='Вчимо по 3 англійські слова на день, у всіх однакові. Сьогодні: '+todayWords().map(x=>x.key).join(', ')+'.';
+    const show=m=>{out.className='feedback ok';out.textContent=m};
+    if(navigator.share){navigator.share({title:'Одне слово',text,url}).catch(()=>{});return}
+    if(navigator.clipboard)navigator.clipboard.writeText(url).then(()=>show('Посилання скопійовано: '+url),()=>show(url));else show(url);
     return;
-  }
-  switch(el.id){
-    case 'call':return pause(Date.now()+30*MIN,'call');
-    case 'off':return openSheet('off');
-    case 'sure':return pause(+el.dataset.until,'off');
-    case 'share':{
-      const url=SITE||location.href.split('#')[0],out=$('#share-fb');
-      const text='Вчимо по 2 англійські слова на день, у всіх однакові. Сьогодні: '+todayWords().map(x=>x.key).join(', ')+'.';
-      const show=m=>{out.className='feedback ok';out.textContent=m};
-      if(navigator.share){navigator.share({title:'Одне слово',text,url}).catch(()=>{});return}
-      if(navigator.clipboard)navigator.clipboard.writeText(url).then(()=>show('Посилання скопійовано: '+url),()=>show(url));else show(url);
-      return;
-    }
-    case 'resume':state.pausedUntil=0;save();return render();
-    case 'more':view='task';lastResult=null;return render();
-    case 'undo':if(t&&t.placed&&t.placed.length){t.placed.pop();fb=null;save();render()}return;
   }
   if(el.classList.contains('tile')&&t&&t.tiles){
     const i=+el.dataset.i;if(t.placed.includes(i))return;
     t.placed.push(i);fb=null;
     if(t.placed.length===t.tiles.length){
       const w=findWord(t.key),word=t.placed.map(k=>t.tiles[k]).join('');
-      if(w.en.some(v=>v.toLowerCase()===word))return complete(t,'');
+      if(w.en.some(v=>v.toLowerCase()===word))return finish(t);
       return fail(t,w);
     }
     save();render();
   }
 });
-document.addEventListener('change',e=>{
-  if(e.target.id==='gap'){state.gap=+e.target.value;save()}
-});
 document.addEventListener('submit',e=>{
   e.preventDefault();
-  if(e.target.id==='f'){
-    const t=state.current,w=findWord(t.key),val=$('#ans').value;
-    if(!val.trim())return;
-    const intro=t.kind==='intro';
-    const r=match(val,intro?w.ua:w.en,intro?'uk':'en');
-    if(r===2)return complete(t,'');
-    if(r===1)return complete(t,'Зараховано з однією помилкою. Правильно: '+(intro?w.ua[0]:w.key)+'.');
-    return fail(t,w);
-  }
-  if(e.target.id==='add'){
-    const en=norm($('#add-en').value,'en'),ua=$('#add-ua').value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
-    const out=$('#add-fb');
-    if(!en||!ua.length){out.className='feedback bad';out.textContent='Заповни обидва поля.';return}
-    if(findWord(en)){out.className='feedback bad';out.textContent='Слово «'+en+'» вже є у словнику.';return}
-    state.custom.unshift([en,ua.join('|')]);state.w[en]={s:1,next:Date.now()};save();openSheet('dict');
-    const f=$('#add-fb');f.className='feedback ok';f.textContent='Додано «'+en+'». Воно з’явиться наступним завданням.';
-  }
+  if(e.target.id!=='f')return;
+  const t=state.current,w=findWord(t.key),val=$('#ans').value;
+  if(!val.trim())return;
+  if(!w.en.some(v=>norm(v)===norm(val)))return fail(t,w);
+  t.step=2;t.fails=0;t.tiles=null;fb={cls:'ok',text:'Є. Тепер без підказки.'};save();render();
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden)closeSheet()});
 window.addEventListener('hashchange',render);
